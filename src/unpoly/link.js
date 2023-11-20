@@ -100,6 +100,11 @@ up.link = (function() {
   const LINKS_WITH_REMOTE_HTML = ['a[href]', '[up-href]']
   const ATTRIBUTES_SUGGESTING_FOLLOW = ['[up-follow]', '[up-target]', '[up-layer]', '[up-transition]', '[up-preload]', '[up-instant]', '[up-href]']
 
+  // There is no { pointerType } value for keyboard. However, a `click` event caused
+  // by focusing a link and pressing `Enter` results in a `PointerEvent` with a `{ pointerType: '' }`.
+  // https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerType
+  const KEYBOARD_POINTER_TYPE = ''
+
   function combineFollowableSelectors(elementSelectors, attributeSelectors) {
     return u.flatMap(elementSelectors, elementSelector => attributeSelectors.map(attrSelector => elementSelector + attrSelector))
   }
@@ -651,7 +656,7 @@ up.link = (function() {
 
     link.addEventListener('keydown', function(event) {
       if ((event.key === 'Enter') || (event.key === 'Space')) {
-        return forkEventAsUpClick(event)
+        return forkEventAsUpClick(event, KEYBOARD_POINTER_TYPE)
       }
     })
   }
@@ -734,7 +739,9 @@ up.link = (function() {
       // Ignore that event and only process if we would still hit the
       // expect layers at the click coordinates.
       } else if (layer.wasHitByMouseEvent(event) && !didUserDragAway(event)) {
-        forkEventAsUpClick(event)
+        // Event is a `PointerEvent` with an { pointerType } property.
+        // Its values are 'mouse', 'pen', 'touch' or '' (unknown, meaning synthetic or keyboard).
+        forkEventAsUpClick(event, event.pointerType)
       }
 
       // In case the user switches input modes.
@@ -754,7 +761,7 @@ up.link = (function() {
         // A11Y: Keyboard navigation will not necessarily trigger a mousedown event.
         // We also don't want to listen to the enter key, since some screen readers
         // use the enter key for something else.
-        forkEventAsUpClick(event)
+        forkEventAsUpClick(event, 'mouse')
       }
     })
   }
@@ -763,9 +770,10 @@ up.link = (function() {
     return lastMousedownTarget && (lastMousedownTarget !== clickEvent.target)
   }
 
-  function forkEventAsUpClick(originalEvent) {
+  function forkEventAsUpClick(originalEvent, pointerType = KEYBOARD_POINTER_TYPE) {
+    console.debug("Forking %o (type %o) with pointerType %o", originalEvent, originalEvent.type, pointerType)
     let forwardedProps = ['clientX', 'clientY', 'button', ...up.event.keyModifiers]
-    const newEvent = up.event.fork(originalEvent, 'up:click', forwardedProps)
+    const newEvent = up.event.fork(originalEvent, 'up:click', forwardedProps, { pointerType })
     up.emit(originalEvent.target, newEvent, { log: false })
   }
 
@@ -1288,7 +1296,9 @@ up.link = (function() {
       //
       // To preseve behavioral symmetry to standard links, we manually focus the link when it was activated
       // on `mousedown`.
-      up.focus(link, { preventScroll: true })
+      let pointingDeviceUsed = (event.pointerType !== KEYBOARD_POINTER_TYPE)
+      console.debug("Following links with pointerType %o", event.pointerType)
+      up.focus(link, { preventScroll: true, hidden: pointingDeviceUsed })
 
       up.error.muteUncriticalRejection(follow(link))
     }

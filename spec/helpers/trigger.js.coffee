@@ -44,6 +44,17 @@ window.Trigger = (->
     event = createMouseEvent('click', u.merge({ element }, options))
     dispatch(element, event)
 
+  clickLinkWithKeyboard = (link) ->
+    link = e.get(link)
+    link.focus({ preventScroll: true })
+    # When a `click` event is emitted by pressing Return on a focused link,
+    # the event is a PointerEvent with an unknown { pointerType }.
+    # See https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerType
+    #
+    # However we cannot emit a PointerEvent programmatically, as this causes the link
+    # to follow immediately, without emitting a `click` event that can be processed by JavaScript.
+    click(link, { pointerType: '' })
+
   focus = (element, options) ->
     element = e.get(element)
     element.focus()
@@ -282,5 +293,6 @@ window.Trigger = (->
   createSimpleEvent: createSimpleEvent
   createMouseEvent: createMouseEvent
   createKeyboardEvent: createKeyboardEvent
+  clickLinkWithKeyboard: clickLinkWithKeyboard
 
 )()

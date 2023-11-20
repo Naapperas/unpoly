@@ -1856,14 +1856,48 @@ describe 'up.link', ->
             expect(clickListener).toHaveBeenCalled()
             expect(link).toHaveBeenDefaultFollowed()
 
-        it 'focused the link after the click sequence (like a vanilla link) zzz', ->
-          followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
-          link = up.hello fixture('a[href="/path"][up-instant]')
+        fdescribe 'focus', ->
 
-          Trigger.clickSequence(link, focus: false)
+          it 'focused the link after the click sequence (like a vanilla link)', ->
+            followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
+            link = up.hello fixture('a[href="/path"][up-instant]')
 
-          expect(followSpy).toHaveBeenCalled()
-          expect(link).toBeFocused()
+            Trigger.clickSequence(link, focus: false)
+
+            expect(followSpy).toHaveBeenCalled()
+            expect(link).toBeFocused()
+
+          it 'hides a focus ring when activated with the mouse', ->
+            followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
+            link = up.hello fixture('a[href="/path"][up-instant]')
+            Trigger.clickSequence(link, focus: false)
+
+            expect(followSpy).toHaveBeenCalled()
+            expect(link).toBeFocused()
+
+            expect(link).not.toHaveOutline()
+
+          it 'shows a focus ring when activated with a non-pointing device (keyboard or unknown)', ->
+            followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
+            link = up.hello fixture('a[href="/path"][up-instant]')
+            Trigger.clickLinkWithKeyboard(link)
+
+            expect(followSpy).toHaveBeenCalled()
+            expect(link).toBeFocused()
+
+            expect(link).toHaveOutline()
+
+          it 'hides the focus ring when activated with the mouse, then shows the focus ring when activated with the keyboard', ->
+            followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
+            link = up.hello fixture('a[href="/path"][up-instant]')
+
+            Trigger.clickSequence(link, focus: false)
+            expect(followSpy.calls.count()).toBe(1)
+            expect(link).not.toHaveOutline()
+
+            Trigger.clickLinkWithKeyboard(link)
+            expect(followSpy.calls.count()).toBe(2)
+            expect(link).toHaveOutline()
 
         describe 'handling of up.link.config.instantSelectors', ->
 

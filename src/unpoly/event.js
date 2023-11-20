@@ -419,8 +419,8 @@ The parsed data will be passed to your event handler as a third argument:
       !u.some(keyModifiers, modifier => event[modifier])
   }
 
-  function fork(originalEvent, newType, copyKeys = []) {
-    const newEvent = up.event.build(newType, u.pick(originalEvent, copyKeys))
+  function fork(originalEvent, newType, copyKeys = [], extraProps = {}) {
+    const newEvent = up.event.build(newType, { ...u.pick(originalEvent, copyKeys), ...extraProps })
     newEvent.originalEvent = originalEvent; // allow users to access other props through event.originalEvent.prop
 
     ['stopPropagation', 'stopImmediatePropagation', 'preventDefault'].forEach(function(key) {

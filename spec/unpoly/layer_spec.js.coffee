@@ -267,9 +267,20 @@ describe 'up.layer', ->
 
       describe 'focus', ->
 
-        it "focuses the new overlay's element", (done) ->
+        it "focuses the new overlay's box", (done) ->
           assertFocus = ->
-            expect(up.layer.current).toBeFocused()
+            expect(up.layer.current.getBoxElement()).toBeFocused()
+            done()
+
+          up.layer.open(target: '.element', onFinished: assertFocus)
+
+          return
+
+        fit "hides a focus ring on the new overlay's box", (done) ->
+          assertFocus = ->
+            debugger
+            expect(up.layer.current.getBoxElement()).toBeFocused()
+            expect(up.layer.current.getBoxElement()).not.toHaveOutline()
             done()
 
           up.layer.open(target: '.element', onFinished: assertFocus)

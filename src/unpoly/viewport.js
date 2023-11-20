@@ -202,17 +202,41 @@ up.viewport = (function() {
 
     @experimental
 
+  @param {boolean} [options.hidden=false]
+    Whether to hide a focus-ring caused by the browser assuming `:focus-visible`.
+
+    @internal
+
   @experimental
   */
-  function doFocus(element, options = {}) {
-    if (options.force) {
-      makeFocusable(element)
+  function doFocus(element, { preventScroll, force, hidden } = {}) {
+    debugger
+
+    if (force) {
+      throw "Overlays already have a tabindex, so we never set hidden = true"
+      // (1) Element#tabIndex is -1 for all non-interactive elements,
+      //     whether or not the element has an [tabindex=-1] attribute.
+      // (2) Element#tabIndex is 0 for interactive elements, like links,
+      //     inputs or buttons. [up-clickable] elements also get a [tabindex=0].
+      //     to participate in the regular tab order.
+      if (!element.hasAttribute('tabindex') && element.tabIndex === -1) {
+        element.setAttribute('tabindex', '-1')
+
+        // A11Y: OK to hide the focus ring of a non-interactive element.
+        hidden = true
+      }
     }
 
     // First focus without scrolling, since we're going to use our custom scrolling logic below.
     element.focus({ preventScroll: true })
 
-    if (!options.preventScroll) {
+    element.classList.remove('up-focus-hidden')
+    if (hidden) {
+      let undoClass = e.addTemporaryClass(element, 'up-focus-hidden')
+      element.addEventListener('blur', undoClass, { once: true })
+    }
+
+    if (!preventScroll) {
       // Use up.reveal() which scrolls far enough to ignore fixed nav bars
       // obstructing the focused element.
       return reveal(element)
@@ -222,20 +246,6 @@ up.viewport = (function() {
   function tryFocus(element, options) {
     doFocus(element, options)
     return element === document.activeElement
-  }
-
-  function makeFocusable(element) {
-    // (1) Element#tabIndex is -1 for all non-interactive elements,
-    //     whether or not the element has an [tabindex=-1] attribute.
-    // (2) Element#tabIndex is 0 for interactive elements, like links,
-    //     inputs or buttons. [up-clickable] elements also get a [tabindex=0].
-    //     to participate in the regular tab order.
-    if (!element.hasAttribute('tabindex') && element.tabIndex === -1) {
-      element.setAttribute('tabindex', '-1')
-
-      // A11Y: OK to hide the focus ring of a non-interactive element.
-      element.classList.add('up-focusable-content')
-    }
   }
 
   /*-
