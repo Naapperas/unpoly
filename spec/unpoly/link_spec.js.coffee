@@ -1305,6 +1305,24 @@ describe 'up.link', ->
 
             expect('main').toHaveText('revalidated main')
 
+          describe 'with [up-layer=new]', ->
+
+            it 'opens the target in a new overlay'
+
+            fit 'hides the focus ring for the new overlay when the link is activated with the mouse', ->
+              throw "test me"
+
+            fit 'shows the focus ring for the new overlay when the link is activated with the keyboard', ->
+              throw "test me"
+
+      describe 'with [up-focus] modifier', ->
+
+        it 'focuses the given selector'
+
+        it 'hides the focus ring when the link is activated with the mouse'
+
+        it 'hides the focus ring when the link is activated with the keyboard'
+
       describe 'with [up-fail-target] modifier', ->
 
         beforeEach ->

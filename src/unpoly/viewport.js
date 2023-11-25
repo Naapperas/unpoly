@@ -210,10 +210,7 @@ up.viewport = (function() {
   @experimental
   */
   function doFocus(element, { preventScroll, force, hidden } = {}) {
-    debugger
-
     if (force) {
-      throw "Overlays already have a tabindex, so we never set hidden = true"
       // (1) Element#tabIndex is -1 for all non-interactive elements,
       //     whether or not the element has an [tabindex=-1] attribute.
       // (2) Element#tabIndex is 0 for interactive elements, like links,

@@ -1297,7 +1297,7 @@ up.link = (function() {
       // To preseve behavioral symmetry to standard links, we manually focus the link when it was activated
       // on `mousedown`.
       let pointingDeviceUsed = (event.pointerType !== KEYBOARD_POINTER_TYPE)
-      console.debug("Following links with pointerType %o", event.pointerType)
+      console.debug("Following links with pointerType %o, pointingDeviceUsed %o", event.pointerType, pointingDeviceUsed)
       up.focus(link, { preventScroll: true, hidden: pointingDeviceUsed })
 
       up.error.muteUncriticalRejection(follow(link))

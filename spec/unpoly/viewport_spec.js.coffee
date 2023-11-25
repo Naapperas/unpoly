@@ -6,6 +6,16 @@ describe 'up.viewport', ->
 
   describe 'JavaScript functions', ->
 
+    describe 'up.focus()', ->
+
+      fdescribe 'focus ring', ->
+
+        it 'hides a focus ring for non-interactive elements'
+
+        it 'shows a focus ring for interactive elements'
+
+        it 'hides a focus ring with { hidden: true }'
+
     describe 'up.viewport.focusedElementWithin()', ->
 
       it 'returns the focused element if it is contained by the given root', ->
