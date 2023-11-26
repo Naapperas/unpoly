@@ -1335,14 +1335,17 @@ describe 'up.link', ->
               expect(up.layer.current.getFocusElement()).not.toHaveOutline()
 
             fit 'shows the focus ring for the new overlay when the link is activated with the keyboard', ->
-              link = fixture('a[href="/overlay"][up-layer=new][up-target="#content"]')
-              Trigger.clickSequence(link)
+              link = fixture('a[href="/overlay"][up-layer=new][up-target="#content"]', text: 'link')
+
+              await wait()
+
+              Trigger.clickLinkWithKeyboard(link)
 
               await wait()
 
               jasmine.respondWithSelector('#content', text:' overlay content')
 
-              await wait()
+              await wait(0)
 
               expect(up.layer.current).toBeOverlay()
               expect(up.layer.current.getFocusElement()).toHaveFocus()
@@ -1381,7 +1384,7 @@ describe 'up.link', ->
           expect('#focus').not.toHaveOutline()
 
         fit 'shows the focus ring when the link is activated with the keyboard', ->
-          fixture('div#focus')
+          fixture('div#focus', text: 'focus')
           fixture('#target', text: 'old content')
           link = fixture('a[href="/path"][up-target="#target"][up-focus="#focus"]')
           Trigger.clickLinkWithKeyboard(link)
@@ -1390,7 +1393,7 @@ describe 'up.link', ->
 
           jasmine.respondWithSelector('#target', text:' new content')
 
-          await wait()
+          await wait(1000)
 
           expect('#focus').toHaveFocus()
           expect('#focus').toHaveOutline()

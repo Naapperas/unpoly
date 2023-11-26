@@ -220,7 +220,7 @@ up.viewport = (function() {
         element.setAttribute('tabindex', '-1')
 
         // A11Y: OK to hide the focus ring of a non-interactive element.
-        hidden = true
+        // hidden = true
       }
     }
 

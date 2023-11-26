@@ -771,7 +771,6 @@ up.link = (function() {
   }
 
   function forkEventAsUpClick(originalEvent, pointerType = KEYBOARD_POINTER_TYPE) {
-    console.debug("Forking %o (type %o) with pointerType %o", originalEvent, originalEvent.type, pointerType)
     let forwardedProps = ['clientX', 'clientY', 'button', ...up.event.keyModifiers]
     const newEvent = up.event.fork(originalEvent, 'up:click', forwardedProps, { pointerType })
     up.emit(originalEvent.target, newEvent, { log: false })
@@ -1297,7 +1296,6 @@ up.link = (function() {
       // To preseve behavioral symmetry to standard links, we manually focus the link when it was activated
       // on `mousedown`.
       let pointingDeviceUsed = (event.pointerType !== KEYBOARD_POINTER_TYPE)
-      console.debug("Following links with pointerType %o, pointingDeviceUsed %o", event.pointerType, pointingDeviceUsed)
       up.focus(link, { preventScroll: true, hidden: pointingDeviceUsed })
 
       up.error.muteUncriticalRejection(follow(link))
