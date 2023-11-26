@@ -789,7 +789,7 @@ describe 'up.event', ->
 
         expect(fooListener).toHaveBeenCalled()
 
-      it 'is focusable for keyboard users', ->
+      fit 'is focusable for keyboard users', ->
         link = up.hello(fixture("a[up-emit='foo']", text: 'label'))
         expect(link).toBeKeyboardFocusable()
 

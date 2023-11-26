@@ -1307,21 +1307,109 @@ describe 'up.link', ->
 
           describe 'with [up-layer=new]', ->
 
-            it 'opens the target in a new overlay'
+            fit 'opens the target in a new overlay', ->
+              link = fixture('a[href="/overlay"][up-layer=new][up-target="#content"]')
+              Trigger.clickSequence(link)
 
-            fit 'hides the focus ring for the new overlay when the link is activated with the mouse', ->
-              throw "test me"
+              await wait()
+
+              jasmine.respondWithSelector('#content', text: ' overlay content')
+
+              await wait()
+
+              expect(up.layer.current).toBeOverlay()
+              expect(up.layer.current).toHaveText('overlay content')
+
+            fit 'focus the new overlay, but hides the focus ring when the link is activated with the mouse', ->
+              link = fixture('a[href="/overlay"][up-layer=new][up-target="#content"]')
+              Trigger.clickSequence(link)
+
+              await wait()
+
+              jasmine.respondWithSelector('#content', text:' overlay content')
+
+              await wait()
+
+              expect(up.layer.current).toBeOverlay()
+              expect(up.layer.current.getFocusElement()).toHaveFocus()
+              expect(up.layer.current.getFocusElement()).not.toHaveOutline()
 
             fit 'shows the focus ring for the new overlay when the link is activated with the keyboard', ->
-              throw "test me"
+              link = fixture('a[href="/overlay"][up-layer=new][up-target="#content"]')
+              Trigger.clickSequence(link)
+
+              await wait()
+
+              jasmine.respondWithSelector('#content', text:' overlay content')
+
+              await wait()
+
+              expect(up.layer.current).toBeOverlay()
+              expect(up.layer.current.getFocusElement()).toHaveFocus()
+              expect(up.layer.current.getFocusElement()).toHaveOutline()
 
       describe 'with [up-focus] modifier', ->
 
-        it 'focuses the given selector'
+        fit 'focuses the given selector', ->
+          fixture('div#focus')
+          fixture('#target', text: 'old content')
+          link = fixture('a[href="/path"][up-target="#target"][up-focus="#focus"]')
+          Trigger.clickSequence(link)
 
-        it 'hides the focus ring when the link is activated with the mouse'
+          await wait()
 
-        it 'hides the focus ring when the link is activated with the keyboard'
+          jasmine.respondWithSelector('#target', text:' new content')
+
+          await wait()
+
+          expect('#target').toHaveText('new content')
+          expect('#focus').toHaveFocus()
+
+        fit 'hides the focus ring when the link is activated with the mouse', ->
+          fixture('div#focus')
+          fixture('#target', text: 'old content')
+          link = fixture('a[href="/path"][up-target="#target"][up-focus="#focus"]')
+          Trigger.clickSequence(link)
+
+          await wait()
+
+          jasmine.respondWithSelector('#target', text:' new content')
+
+          await wait()
+
+          expect('#focus').toHaveFocus()
+          expect('#focus').not.toHaveOutline()
+
+        fit 'shows the focus ring when the link is activated with the keyboard', ->
+          fixture('div#focus')
+          fixture('#target', text: 'old content')
+          link = fixture('a[href="/path"][up-target="#target"][up-focus="#focus"]')
+          Trigger.clickLinkWithKeyboard(link)
+
+          await wait()
+
+          jasmine.respondWithSelector('#target', text:' new content')
+
+          await wait()
+
+          expect('#focus').toHaveFocus()
+          expect('#focus').toHaveOutline()
+
+        fit 'shows the focus ring when the link is activated with the mouse and the focused element is an input', ->
+          form = fixture('form')
+          e.affix(form, 'input#focus[name="email"]')
+          fixture('#target', text: 'old content')
+          link = fixture('a[href="/path"][up-target="#target"][up-focus="#focus"]')
+          Trigger.clickSequence(link)
+
+          await wait()
+
+          jasmine.respondWithSelector('#target', text:' new content')
+
+          await wait()
+
+          expect('#focus').toHaveFocus()
+          expect('#focus').toHaveOutline()
 
       describe 'with [up-fail-target] modifier', ->
 
@@ -1874,9 +1962,9 @@ describe 'up.link', ->
             expect(clickListener).toHaveBeenCalled()
             expect(link).toHaveBeenDefaultFollowed()
 
-        fdescribe 'focus', ->
+        describe 'focus', ->
 
-          it 'focused the link after the click sequence (like a vanilla link)', ->
+          fit 'focused the link after the click sequence (like a vanilla link)', ->
             followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
             link = up.hello fixture('a[href="/path"][up-instant]')
 
@@ -1885,7 +1973,7 @@ describe 'up.link', ->
             expect(followSpy).toHaveBeenCalled()
             expect(link).toBeFocused()
 
-          it 'hides a focus ring when activated with the mouse', ->
+          fit 'hides a focus ring when activated with the mouse', ->
             followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
             link = up.hello fixture('a[href="/path"][up-instant]')
             Trigger.clickSequence(link, focus: false)
@@ -1895,7 +1983,7 @@ describe 'up.link', ->
 
             expect(link).not.toHaveOutline()
 
-          it 'shows a focus ring when activated with a non-pointing device (keyboard or unknown)', ->
+          fit 'shows a focus ring when activated with a non-pointing device (keyboard or unknown)', ->
             followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
             link = up.hello fixture('a[href="/path"][up-instant]')
             Trigger.clickLinkWithKeyboard(link)
@@ -1905,7 +1993,7 @@ describe 'up.link', ->
 
             expect(link).toHaveOutline()
 
-          it 'hides the focus ring when activated with the mouse, then shows the focus ring when activated with the keyboard', ->
+          fit 'hides the focus ring when activated with the mouse, then shows the focus ring when activated with the keyboard', ->
             followSpy = up.link.follow.mock().and.returnValue(Promise.resolve())
             link = up.hello fixture('a[href="/path"][up-instant]')
 
@@ -2715,7 +2803,7 @@ describe 'up.link', ->
 
       expect(clickListener).toHaveBeenCalled()
 
-    it 'makes the element focusable for keyboard users', ->
+    fit 'makes the element focusable for keyboard users', ->
       fauxLink = up.hello(fixture('.hyperlink[up-clickable]'))
 
       expect(fauxLink).toBeKeyboardFocusable()
