@@ -1,8 +1,34 @@
+focus-visible
+=============
+
+- A better implementation without [up-focus-device]
+  - Bring back .up-focus-hidden
+    - Or should it be .up-focus .up-focus-visible for symmetry to :focus, :focus-visible
+  - up.focus() gets option { focusVisible: 'auto' }
+    - Options: true, false, 'auto', null
+  - Add up.viewport.config.autoFocusVisible.
+    - Defaults to focusDevice == keyboard || up.form.isField(element)
+      - Called with { focusDevice, element }
+  - Pass { focusVisible } options for browsers that support it
+  - Can .up-focus-hidden remove focus in Bootstrap 5?
+    - E.g. .up-focus-hidden { --bootstrap-focus-ring-width: 0 }
+- Old idea
+  - Consider publishing [up-focus-device] as experimental
+  - Consider publishing { focusDevice } for up.render(), up.focus()
+    - This has a default
+  - Will we ever need [up-use-focus-device] ?
+  - Do we need to support this:
+    - Current focus is on a :focus-visible element (e.g. an input)
+    - A script e.g. does up.layer.open()
+    - Current behavior is: No focus-visible
+    - Flowchat says: Focus should be visible (really?)
+- Focus ring doc page
+- Remove initial implementation w/ { pointerType }
+
+
 Backlog
 =======
 
-
-- Hide focus ring for up-instant links
 - Explain that nonce-prefixing only works for [up-on] attributes
   - In /csp
   - In unpoly-rails README
