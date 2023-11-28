@@ -1380,6 +1380,8 @@ describe 'up.link', ->
 
           await wait()
 
+          debugger
+
           expect('#focus').toHaveFocus()
           expect('#focus').not.toHaveOutline()
 

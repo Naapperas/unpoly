@@ -9,14 +9,29 @@ window.Trigger = (->
     event = createMouseEvent('mouseover', u.merge({ element }, options))
     dispatch(element, event)
 
+  pointerover = (element, options) ->
+    element = e.get(element)
+    event = createMouseEvent('pointerover', u.merge({ element }, options))
+    dispatch(element, event)
+
   mouseenter = (element, options) ->
     element = e.get(element)
     event = createMouseEvent('mouseenter', u.merge({ element }, options))
     dispatch(element, event)
 
+  pointerenter = (element, options) ->
+    element = e.get(element)
+    event = createMouseEvent('pointerenter', u.merge({ element }, options))
+    dispatch(element, event)
+
   mousedown = (element, options) ->
     element = e.get(element)
     event = createMouseEvent('mousedown', u.merge({ element }, options))
+    dispatch(element, event)
+
+  pointerdown = (element, options) ->
+    element = e.get(element)
+    event = createMouseEvent('pointerdown', u.merge({ element }, options))
     dispatch(element, event)
 
   mouseout = (element, options) ->
@@ -34,6 +49,11 @@ window.Trigger = (->
     event = createMouseEvent('mouseup', u.merge({ element }, options))
     dispatch(element, event)
 
+  pointerup = (element, options) ->
+    element = e.get(element)
+    event = createMouseEvent('pointerup', u.merge({ element }, options))
+    dispatch(element, event)
+
   touchstart = (element, options) ->
     element = e.get(element)
     event = createSimpleEvent('touchstart', u.merge({ element }, options))
@@ -44,7 +64,7 @@ window.Trigger = (->
     event = createMouseEvent('click', u.merge({ element }, options))
     dispatch(element, event)
 
-  clickLinkWithKeyboard = (link) ->
+  clickLinkWithKeyboard = (link, options) ->
     link = e.get(link)
     link.focus({ preventScroll: true })
     # When a `click` event is emitted by pressing Return on a focused link,
@@ -53,7 +73,11 @@ window.Trigger = (->
     #
     # However we cannot emit a PointerEvent programmatically, as this causes the link
     # to follow immediately, without emitting a `click` event that can be processed by JavaScript.
-    click(link, { pointerType: '' })
+    key = "Return"
+    keydown(link, key, options)
+    keypress(link, key, options)
+    click(link, u.merge(options, { pointerType: '' }))
+    keyup(link, key, options)
 
   focus = (element, options) ->
     element = e.get(element)
@@ -142,11 +166,14 @@ window.Trigger = (->
   clickSequence = (element, options = {}) ->
     element = e.get(element)
     isButton = element.matches('button, input[type=button], input[type=submit], input[type=image]')
+    pointerover(element, options)
     mouseover(element, options)
+    pointerdown(element, options)
     mousedown(element, options)
     # MacOS by default does not focus buttons on click
     unless (isButton && AgentDetector.isSafari()) || (options.focus == false)
       focus(element, options)
+    pointerup(element, options)
     mouseup(element, options)
     click(element, options)
 

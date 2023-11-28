@@ -209,7 +209,7 @@ up.viewport = (function() {
 
   @experimental
   */
-  function doFocus(element, { preventScroll, force, hidden } = {}) {
+  function doFocus(element, { preventScroll, force, focusDevice } = {}) {
     if (force) {
       // (1) Element#tabIndex is -1 for all non-interactive elements,
       //     whether or not the element has an [tabindex=-1] attribute.
@@ -227,11 +227,9 @@ up.viewport = (function() {
     // First focus without scrolling, since we're going to use our custom scrolling logic below.
     element.focus({ preventScroll: true })
 
-    element.classList.remove('up-focus-hidden')
-    if (hidden) {
-      let undoClass = e.addTemporaryClass(element, 'up-focus-hidden')
-      element.addEventListener('blur', undoClass, { once: true })
-    }
+    focusDevice ||= getFocusDevice()
+    let undoDeviceAttr = e.setTemporaryAttrs(element, { 'up-focus-device': focusDevice })
+    element.addEventListener('blur', undoDeviceAttr, { once: true })
 
     if (!preventScroll) {
       // Use up.reveal() which scrolls far enough to ignore fixed nav bars
@@ -911,6 +909,25 @@ up.viewport = (function() {
     return to
   }
 
+  let focusDevices = ['unknown']
+
+  function getFocusDevice() {
+    return u.last(focusDevices)
+  }
+
+  function observeFocusDevice(newModality) {
+    focusDevices.push(newModality)
+    setTimeout(() => focusDevices.pop())
+  }
+
+  for (let keyEvent of ['keydown', 'keyup']) {
+    document.addEventListener(keyEvent, () => observeFocusDevice('key'), { useCapture: true })
+  }
+
+  for (let pointerEvent of ['pointerdown', 'pointerup']) {
+    document.addEventListener(pointerEvent, () => observeFocusDevice('pointer'), { useCapture: true })
+  }
+
   let userScrolled = false
   up.on('scroll', { once: true, beforeBoot: true }, () => userScrolled = true)
 
@@ -963,6 +980,7 @@ up.viewport = (function() {
     focusedElementWithin,
     copyCursorProps,
     bodyShifter,
+    get focusDevice() { return getFocusDevice() }
   }
 })()
 

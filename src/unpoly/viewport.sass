@@ -1,6 +1,6 @@
 up-bounds
   position: absolute
 
-.up-focus-hidden
-  &:focus-visible
+[up-focus-device=pointer], [up-focus-device=unknown]
+  &:focus-visible:not(input, textarea, select)
     outline: none !important
